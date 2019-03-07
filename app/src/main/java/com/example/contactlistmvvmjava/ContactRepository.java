@@ -11,26 +11,44 @@ public class ContactRepository {
     private ContactDao mContactDao;
     private LiveData<List<Contact>> mAllContacts;
 
-        ContactRepository(Application application){
+    ContactRepository(Application application){
         ContactRoomDatabase db = ContactRoomDatabase.getDatabase(application);
         mContactDao = db.contactDao();
         mAllContacts = mContactDao.getAllContacts();
+    }
+
+    LiveData<List<Contact>> getAllContacts() { return mAllContacts;}
+
+    public void insert (Contact contact) {new insertAsyncTask(mContactDao).execute(contact);}
+    public void deleteContact(Contact contact) {new deleteContactAsyncTask(mContactDao).execute(contact);}
+
+
+
+    private static class insertAsyncTask extends AsyncTask<Contact, Void, Void> {
+        private ContactDao mAsyncTaskDao;
+
+        insertAsyncTask(ContactDao dao) {
+            mAsyncTaskDao = dao;
         }
 
-        LiveData<List<Contact>> getAllContacts() { return mAllContacts;}
-        public void insert (Contact contact) {new insertAsyncTask(mContactDao).execute(contact);}
-
-        private static class insertAsyncTask extends AsyncTask<Contact, Void, Void> {
-            private ContactDao mAsyncTaskDao;
-
-            insertAsyncTask(ContactDao dao) {
-                mAsyncTaskDao = dao;
-            }
-
-            @Override
-            protected Void doInBackground(final Contact... params) {
-                mAsyncTaskDao.insert(params[0]);
-                return null;
-            }
+        @Override
+        protected Void doInBackground(final Contact... params) {
+            mAsyncTaskDao.insert(params[0]);
+            return null;
         }
+    }
+
+    private static class deleteContactAsyncTask extends AsyncTask<Contact, Void, Void> {
+        private ContactDao mAsyncTaskDao;
+
+        deleteContactAsyncTask(ContactDao dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(final Contact... params) {
+            mAsyncTaskDao.deleteContact(params[0]);
+            return null;
+        }
+    }
 }

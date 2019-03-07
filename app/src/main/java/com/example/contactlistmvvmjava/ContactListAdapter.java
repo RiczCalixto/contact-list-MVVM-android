@@ -24,7 +24,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
     }
 
     private final LayoutInflater mInflater;
-    private List<Contact> mContacts; // Cached copy of words
+    private List<Contact> mContacts;
 
     ContactListAdapter(Context context) { mInflater = LayoutInflater.from(context); }
 
@@ -40,18 +40,21 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
         holder.contactItemView.setText(current.getContact());
     }
 
-    void setWords(List<Contact> words){
-        mContacts = words;
+    void setWords(List<Contact> contacts){
+        mContacts = contacts;
         notifyDataSetChanged();
     }
 
-    // getItemCount() is called many times, and when it is first called,
-    // mWords has not been updated (means initially, it's null, and we can't return null).
+
     @Override
     public int getItemCount() {
         if (mContacts != null)
             return mContacts.size();
         else return 0;
+    }
+
+    public Contact getContactAtPosition (int position) {
+        return mContacts.get(position);
     }
 }
 

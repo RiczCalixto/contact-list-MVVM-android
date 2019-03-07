@@ -13,23 +13,23 @@ public class NewContactActivity extends AppCompatActivity {
 
     public static final String EXTRA_REPLY = "com.example.contactlistmvvmjava.REPLY";
 
-    private EditText mEditWordView;
+    private EditText mEditContactView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_contact);
-        mEditWordView = findViewById(R.id.edit_word);
+        mEditContactView = findViewById(R.id.edit_contact);
 
         final Button button = findViewById(R.id.button_save);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent replyIntent = new Intent();
-                if (TextUtils.isEmpty(mEditWordView.getText())) {
+                if (TextUtils.isEmpty(mEditContactView.getText())) {
                     setResult(RESULT_CANCELED, replyIntent);
                 } else {
-                    String word = mEditWordView.getText().toString();
-                    replyIntent.putExtra(EXTRA_REPLY, word);
+                    String contact = mEditContactView.getText().toString();
+                    replyIntent.putExtra(EXTRA_REPLY, contact);
                     setResult(RESULT_OK, replyIntent);
                 }
                 finish();

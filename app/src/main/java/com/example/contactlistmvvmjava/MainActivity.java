@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,7 +22,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final int NEW_WORD_ACTIVITY_REQUEST_CODE = 1;
+    public static final int NEW_CONTACT_ACTIVITY_REQUEST_CODE = 1;
 
     private ContactViewModel mContactViewModel;
 
@@ -54,9 +55,34 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, NewContactActivity.class);
-                startActivityForResult(intent, NEW_WORD_ACTIVITY_REQUEST_CODE);
+                startActivityForResult(intent, NEW_CONTACT_ACTIVITY_REQUEST_CODE);
             }
         });
+
+        ItemTouchHelper helper = new ItemTouchHelper(
+                new ItemTouchHelper.SimpleCallback(0,
+                        ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+                    @Override
+                    public boolean onMove(RecyclerView recyclerView,
+                                          RecyclerView.ViewHolder viewHolder,
+                                          RecyclerView.ViewHolder target) {
+                        return false;
+                    }
+
+                    @Override
+                    public void onSwiped(RecyclerView.ViewHolder viewHolder,
+                                         int direction) {
+                        int position = viewHolder.getAdapterPosition();
+                        Contact myContact = adapter.getContactAtPosition(position);
+                        Toast.makeText(MainActivity.this, "Deleting " +
+                                myContact.getContact(), Toast.LENGTH_LONG).show();
+
+                        // Delete the word
+                        mContactViewModel.deleteContact(myContact);
+                    }
+                });
+
+        helper.attachToRecyclerView(recyclerView);
     }
 
     @Override
@@ -77,9 +103,9 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == NEW_WORD_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
-            Contact word = new Contact(data.getStringExtra(NewContactActivity.EXTRA_REPLY));
-            mContactViewModel.insert(word);
+        if (requestCode == NEW_CONTACT_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+            Contact contact = new Contact(data.getStringExtra(NewContactActivity.EXTRA_REPLY));
+            mContactViewModel.insert(contact);
         } else {
             Toast.makeText(
                     getApplicationContext(),

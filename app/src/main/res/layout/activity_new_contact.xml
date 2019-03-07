@@ -7,7 +7,7 @@
     android:padding="24dp">
 
     <EditText
-        android:id="@+id/edit_word"
+        android:id="@+id/edit_contact"
         style="@style/text_view_style"
         android:hint="@string/hint_word"
         android:inputType="textAutoComplete" />

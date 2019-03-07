@@ -21,9 +21,7 @@ public abstract class ContactRoomDatabase extends RoomDatabase {
             synchronized (ContactRoomDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            ContactRoomDatabase.class, "word_database")
-                            // Wipes and rebuilds instead of migrating if no Migration object.
-                            // Migration is not part of this codelab.
+                            ContactRoomDatabase.class, "contact_database")
                             .fallbackToDestructiveMigration()
                             .addCallback(sRoomDatabaseCallback)
                             .build();
@@ -38,8 +36,6 @@ public abstract class ContactRoomDatabase extends RoomDatabase {
         @Override
         public void onOpen (@NonNull SupportSQLiteDatabase db){
             super.onOpen(db);
-            // If you want to keep the data through app restarts,
-            // comment out the following line.
             new PopulateDbAsync(INSTANCE).execute();
         }
     };
@@ -47,7 +43,7 @@ public abstract class ContactRoomDatabase extends RoomDatabase {
     private static class PopulateDbAsync extends AsyncTask<Void, Void, Void> {
 
         private final ContactDao mDao;
-        String [] contacts = {"ric", "teste"};
+        String [] contacts = {};
 
         PopulateDbAsync(ContactRoomDatabase db) {
             mDao = db.contactDao();
@@ -55,13 +51,13 @@ public abstract class ContactRoomDatabase extends RoomDatabase {
 
         @Override
         protected Void doInBackground(final Void... params) {
-            // Start the app with a clean database every time.
-            // Not needed if you only populate on creation.
-            mDao.deleteAll();
+//            mDao.deleteAll();
 
-            for( int i = 0; i <= contacts.length - 1; i++) {
-                Contact contact = new Contact(contacts[i]);
-                mDao.insert(contact);
+            if (mDao.getAnyWord().length < 1) {
+                for (int i = 0; i <= contacts.length - 1; i++) {
+                    Contact contact = new Contact(contacts[i]);
+                    mDao.insert(contact);
+                }
             }
             return null;
         }
